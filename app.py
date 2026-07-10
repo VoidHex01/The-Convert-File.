@@ -1,9 +1,6 @@
 import os
 from flask import Flask, render_template, request, send_file
-from pdf2docx import Converter
-from docx2pdf import convert
 import zipfile
-import pythoncom  # <--- AGGIUNTO QUESTO PER SBLOCCARE WINDOWS
 
 app = Flask(__name__)
 UPLOAD_FOLDER = 'uploads'
@@ -25,21 +22,17 @@ def upload_file():
     
     path_finale = ""
     
-    if azione == 'PDF a Word':
-        path_finale = path_originale.replace('.pdf', '.docx')
-        cv = Converter(path_originale)
-        cv.convert(path_finale)
-        cv.close()
-    elif azione == 'Word a PDF':
-        path_finale = path_originale.replace('.docx', '.pdf')
-        pythoncom.CoInitialize()  # <--- AGGIUNTO QUESTO: Sblocca la conversione Word
-        convert(path_originale, path_finale)
-    elif azione == 'comprimere':
+    if azione == 'comprimere':
         path_finale = path_originale + ".zip"
         with zipfile.ZipFile(path_finale, 'w', zipfile.ZIP_DEFLATED) as zipf:
             zipf.write(path_originale, file.filename)
-            
-    return send_file(path_finale, as_attachment=True)
+        return send_file(path_finale, as_attachment=True)
+        
+    elif azione == 'PDF a Word' or azione == 'Word a PDF':
+        return f"File '{file.filename}' ricevuto correttamente sul server! Le conversioni PDF/Word richiedono software di sistema non presente sul piano gratuito. Funzione di compressione ZIP attiva!"
+        
+    return "Azione non valida", 400
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)
