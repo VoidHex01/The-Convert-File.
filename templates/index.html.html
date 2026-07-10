@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Master File - LIVE</title>
+    <style>
+        body { background: #0f172a; color: white; font-family: sans-serif; text-align: center; padding: 50px; }
+        .box { background: #1e293b; padding: 40px; border-radius: 20px; max-width: 500px; margin: auto; }
+        input { margin-bottom: 20px; color: white; }
+        button { background: #a3e635; color: black; border: none; padding: 15px 30px; border-radius: 10px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h1>Master File</h1>
+        <form action="/upload" method="post" enctype="multipart/form-data">
+            <input type="file" name="file" required><br>
+            <button type="submit" name="azione" value="comprimere">COMPATTA FILE</button>
+            <button type="submit" name="azione" value="PDF a Word">PDF ➔ WORD</button>
+            <button type="submit" name="azione" value="Word a PDF">WORD ➔ PDF</button>
+        </form>
+    </div>
+</body>
+</html>
