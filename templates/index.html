@@ -154,34 +154,39 @@
         .btn-action:hover {
             background-color: var(--accent-hover);
         }
-        .loader-container {
+        
+        /* NUOVA BARRA DI PROGRESSO REALE */
+        .progress-container {
             display: none;
-            text-align: center;
-            padding: 1rem 0;
+            margin-top: 1rem;
+            text-align: left;
         }
-        .spinner {
-            width: 24px;
-            height: 24px;
-            border: 3px solid var(--border);
-            border-top: 3px solid var(--accent);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 0.5rem auto;
+        .progress-bar-bg {
+            background-color: var(--border);
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 0.5rem;
         }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        .progress-bar-fill {
+            background-color: var(--accent);
+            width: 0%;
+            height: 100%;
+            transition: width 0.1s ease;
         }
-        .loader-text {
-            font-size: 0.85rem;
+        .progress-text {
+            font-size: 0.8rem;
             color: var(--accent);
+            display: flex;
+            justify-content: space-between;
         }
     </style>
 </head>
 <body>
     <header>
         <div class="logo">The Convert File</div>
-        <div class="version">v2.1 Pro</div>
+        <div class="version">v2.2 Ultra</div>
     </header>
     <main>
         <div class="hero-section">
@@ -194,7 +199,7 @@
                     <h3>Comprimi in ZIP</h3>
                     <p>Riduci le dimensioni dei tuoi file racchiudendoli in un archivio compresso leggero.</p>
                 </div>
-                <form action="/upload" method="POST" enctype="multipart/form-data" class="uploadForm">
+                <form class="uploadForm">
                     <input type="hidden" name="azione" value="comprimere">
                     <label class="drop-zone">
                         <span class="drop-zone-text">Trascina qui il file o clicca</span>
@@ -203,9 +208,9 @@
                         <div class="error-message">File troppo grande! Max 15MB.</div>
                     </label>
                     <button type="submit" class="btn-action">Comprimi</button>
-                    <div class="loader-container">
-                        <div class="spinner"></div>
-                        <div class="loader-text">Compressione in corso...</div>
+                    <div class="progress-container">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill"></div></div>
+                        <div class="progress-text"><span class="status-msg">Caricamento...</span><span class="percent-msg">0%</span></div>
                     </div>
                 </form>
             </div>
@@ -214,7 +219,7 @@
                     <h3>Converti da PDF a Word</h3>
                     <p>Estrai testi e tabelle da un documento PDF statico e trasformalo in un file Word modificabile.</p>
                 </div>
-                <form action="/upload" method="POST" enctype="multipart/form-data" class="uploadForm">
+                <form class="uploadForm">
                     <input type="hidden" name="azione" value="PDF a Word">
                     <label class="drop-zone">
                         <span class="drop-zone-text">Trascina qui il PDF o clicca</span>
@@ -223,9 +228,9 @@
                         <div class="error-message">File troppo grande! Max 15MB.</div>
                     </label>
                     <button type="submit" class="btn-action">Converti in Word</button>
-                    <div class="loader-container">
-                        <div class="spinner"></div>
-                        <div class="loader-text">Conversione in corso...</div>
+                    <div class="progress-container">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill"></div></div>
+                        <div class="progress-text"><span class="status-msg">Elaborazione...</span><span class="percent-msg">0%</span></div>
                     </div>
                 </form>
             </div>
@@ -234,7 +239,7 @@
                     <h3>Converti da Word a PDF</h3>
                     <p>Proteggi la formattazione dei tuoi documenti di testo convertendo i file Word (.docx) in PDF.</p>
                 </div>
-                <form action="/upload" method="POST" enctype="multipart/form-data" class="uploadForm">
+                <form class="uploadForm">
                     <input type="hidden" name="azione" value="Word a PDF">
                     <label class="drop-zone">
                         <span class="drop-zone-text">Trascina qui il file Word o clicca</span>
@@ -243,9 +248,9 @@
                         <div class="error-message">File troppo grande! Max 15MB.</div>
                     </label>
                     <button type="submit" class="btn-action">Converti in PDF</button>
-                    <div class="loader-container">
-                        <div class="spinner"></div>
-                        <div class="loader-text">Generazione PDF in corso...</div>
+                    <div class="progress-container">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill"></div></div>
+                        <div class="progress-text"><span class="status-msg">Generazione...</span><span class="percent-msg">0%</span></div>
                     </div>
                 </form>
             </div>
@@ -301,18 +306,90 @@
                 btn.style.cursor = 'pointer';
             }
         }
+
+        // GESTIONE INVIO ASINCRONO CON ABILITAZIONE DELLA BARRA REALE
         document.querySelectorAll('.uploadForm').forEach(form => {
             form.addEventListener('submit', function(e) {
+                e.preventDefault();
                 const btn = this.querySelector('.btn-action');
-                if(btn.disabled) {
-                    e.preventDefault();
-                    return;
-                }
-                const loader = this.querySelector('.loader-container');
+                if(btn.disabled) return;
+                
                 const dropZone = this.querySelector('.drop-zone');
+                const progContainer = this.querySelector('.progress-container');
+                const progFill = this.querySelector('.progress-bar-fill');
+                const percentMsg = this.querySelector('.percent-msg');
+                const statusMsg = this.querySelector('.status-msg');
+                const fileInput = this.querySelector('.fileInput');
+                
+                if (!fileInput.files.length) return;
+
                 btn.style.display = 'none';
                 dropZone.style.display = 'none';
-                loader.style.display = 'block';
+                progContainer.style.display = 'block';
+
+                const formData = new FormData(this);
+                const xhr = new XMLHttpRequest();
+
+                // Intercettiamo il caricamento reale del file
+                xhr.upload.addEventListener('progress', function(e) {
+                    if (e.lengthComputable) {
+                        const percent = Math.round((e.loaded / e.total) * 100);
+                        progFill.style.width = percent + '%';
+                        percentMsg.innerText = percent + '%';
+                        if(percent === 100){
+                            statusMsg.innerText = "Elaborazione file in corso...";
+                        }
+                    }
+                });
+
+                xhr.open('POST', '/upload', true);
+                xhr.responseType = 'blob';
+
+                xhr.onload = function() {
+                    if (xhr.status === 200) {
+                        statusMsg.innerText = "Completato!";
+                        progFill.style.backgroundColor = "#10b981"; // Diventa verde al successo
+                        
+                        // Avvia il download automatico del file restituito dalla RAM
+                        const blob = xhr.response;
+                        const disposition = xhr.getResponseHeader('Content-Disposition');
+                        let filename = "file_convertito";
+                        if (disposition && disposition.indexOf('attachment') !== -1) {
+                            const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+                            const matches = filenameRegex.exec(disposition);
+                            if (matches != null && matches[1]) filename = matches[1].replace(/['"]/g, '');
+                        }
+                        
+                        const downloadUrl = window.URL.createObjectURL(blob);
+                        const a = document.createElement("a");
+                        a.href = downloadUrl;
+                        a.download = filename;
+                        document.body.appendChild(a);
+                        a.click();
+                        a.remove();
+                        
+                        // Ripristina l'interfaccia dopo 2 secondi
+                        setTimeout(() => {
+                            progContainer.style.display = 'none';
+                            progFill.style.width = '0%';
+                            progFill.style.backgroundColor = 'var(--accent)';
+                            percentMsg.innerText = '0%';
+                            statusMsg.innerText = 'Caricamento...';
+                            fileInput.value = "";
+                            this.querySelector('.file-selected-name').style.display = 'none';
+                            this.querySelector('.drop-zone-text').style.display = 'block';
+                            btn.style.display = 'block';
+                            dropZone.style.display = 'block';
+                        }, 2000);
+                    } else {
+                        alert("Si è verificato un errore durante la conversione.");
+                        btn.style.display = 'block';
+                        dropZone.style.display = 'block';
+                        progContainer.style.display = 'none';
+                    }
+                }.bind(this);
+
+                xhr.send(formData);
             });
         });
     </script>
