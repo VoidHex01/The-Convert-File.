@@ -3,191 +3,303 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Convert File</title>
+    <title>The Convert File - Strumenti di Conversione Professionali</title>
     <style>
         :root {
-            --bg-color: #0f172a;
-            --card-bg: #1e293b;
-            --accent-color: #38bdf8;
-            --text-color: #f8fafc;
-            --text-muted: #94a3b8;
+            --bg-primary: #0b0f19;
+            --bg-secondary: #111827;
+            --bg-card: #1f2937;
+            --accent: #38bdf8;
+            --accent-hover: #7dd3fc;
+            --text-main: #f9fafb;
+            --text-muted: #9ca3af;
+            --border: #374151;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-main);
             margin: 0;
             padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
             min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
-        .container {
-            background-color: var(--card-bg);
-            padding: 2.5rem;
-            border-radius: 16px;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
-            width: 100%;
-            max-width: 450px;
-            text-align: center;
-            border: 1px solid #334155;
+        /* NAVBAR SUPERIORE */
+        header {
+            background-color: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        h1 {
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
-            color: var(--accent-color);
+        header .logo {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
-        p.subtitle {
+        header .version {
+            font-size: 0.8rem;
+            background: var(--border);
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
             color: var(--text-muted);
-            font-size: 0.95rem;
-            margin-bottom: 2rem;
         }
 
-        .form-group {
-            margin-bottom: 1.5rem;
-            text-align: left;
+        /* AREA PRINCIPALE */
+        main {
+            flex: 1;
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+            box-sizing: border-box;
         }
 
-        label {
-            display: block;
+        .hero-section {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .hero-section h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
             margin-bottom: 0.5rem;
+        }
+
+        .hero-section p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        /* GRIGLIA DEGLI STRUMENTI */
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .tool-card {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 2rem;
+            transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .tool-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent);
+            box-shadow: 0 10px 20px -10px rgba(56, 189, 248, 0.2);
+        }
+
+        .tool-info h3 {
+            font-size: 1.3rem;
+            margin-top: 0;
+            margin-bottom: 0.5rem;
+        }
+
+        .tool-info p {
             color: var(--text-muted);
             font-size: 0.9rem;
-            font-weight: 600;
+            line-height: 1.5;
+            margin-bottom: 1.5rem;
         }
 
-        input[type="file"] {
-            width: 100%;
-            padding: 0.75rem;
-            background: #0f172a;
-            border: 2px dashed #475569;
+        /* FORM DI CARICAMENTO STILE DRAG & DROP */
+        .drop-zone {
+            border: 2px dashed var(--border);
             border-radius: 8px;
-            color: var(--text-color);
-            box-sizing: border-box;
+            padding: 1.5rem;
+            text-align: center;
+            background-color: var(--bg-primary);
             cursor: pointer;
             transition: border-color 0.2s;
+            margin-bottom: 1rem;
         }
 
-        input[type="file"]:hover {
-            border-color: var(--accent-color);
+        .drop-zone:hover {
+            border-color: var(--accent);
         }
 
-        select {
-            width: 100%;
-            padding: 0.75rem;
-            background: #0f172a;
-            border: 1px solid #475569;
-            border-radius: 8px;
-            color: var(--text-color);
-            font-size: 1rem;
-            outline: none;
-            cursor: pointer;
-        }
-
-        button {
-            width: 100%;
-            padding: 0.75rem;
-            background-color: var(--accent-color);
-            color: #0f172a;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: transform 0.1s, background-color 0.2s;
-            margin-top: 1rem;
-        }
-
-        button:hover {
-            background-color: #7dd3fc;
-            transform: translateY(-1px);
-        }
-
-        button:active {
-            transform: translateY(1px);
-        }
-
-        /* Barra di Caricamento */
-        .progress-container {
+        .drop-zone input[type="file"] {
             display: none;
-            margin-top: 1.5rem;
         }
 
-        .progress-text {
+        .drop-zone-text {
             font-size: 0.85rem;
-            color: var(--accent-color);
-            margin-bottom: 0.5rem;
+            color: var(--text-muted);
         }
 
-        .progress-bar {
+        .file-selected-name {
+            font-size: 0.85rem;
+            color: var(--accent);
+            font-weight: bold;
+            margin-top: 0.5rem;
+            display: none;
+            word-break: break-all;
+        }
+
+        .btn-action {
             width: 100%;
-            height: 6px;
-            background-color: #475569;
-            border-radius: 3px;
-            overflow: hidden;
-            position: relative;
+            padding: 0.75rem;
+            background-color: var(--accent);
+            color: var(--bg-primary);
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
         }
 
-        .progress-fill {
-            width: 30%;
-            height: 100%;
-            background-color: var(--accent-color);
-            border-radius: 3px;
-            position: absolute;
-            animation: loading 1.5s infinite ease-in-out;
+        .btn-action:hover {
+            background-color: var(--accent-hover);
         }
 
-        @keyframes loading {
-            0% { left: -30%; }
-            50% { left: 100%; }
-            100% { left: 100%; }
+        /* STATO DI CARICAMENTO */
+        .loader-container {
+            display: none;
+            text-align: center;
+            padding: 1rem 0;
+        }
+
+        .spinner {
+            width: 24px;
+            height: 24px;
+            border: 3px solid var(--border);
+            border-top: 3px solid var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 0.5rem auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loader-text {
+            font-size: 0.85rem;
+            color: var(--accent);
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>The Convert File</h1>
-    <p class="subtitle">Comprimi o converti i tuoi documenti in un click</p>
-    
-    <form action="/upload" method="POST" enctype="multipart/form-data" id="uploadForm">
-        <div class="form-group">
-            <label for="file">Seleziona il file</label>
-            <input type="file" name="file" id="file" required>
-        </div>
-        
-        <div class="form-group">
-            <label for="azione">Scegli l'operazione</label>
-            <select name="azione" id="azione">
-                <option value="comprimere">Comprimi in ZIP</option>
-                <option value="PDF a Word">Converti da PDF a Word</option>
-                <option value="Word a PDF">Converti da Word a PDF</option>
-            </select>
-        </div>
-        
-        <button type="submit" id="submitBtn">Elabora File</button>
-    </form>
+    <header>
+        <div class="logo">The Convert File</div>
+        <div class="version">v2.0 Professional</div>
+    </header>
 
-    <div class="progress-container" id="progressContainer">
-        <div class="progress-text">Elaborazione sul server in corso...</div>
-        <div class="progress-bar">
-            <div class="progress-fill"></div>
+    <main>
+        <div class="hero-section">
+            <h1>Soluzioni per i tuoi file in un unico posto</h1>
+            <p>Semplice, veloce, sicuro e ottimizzato per il cloud computing.</p>
         </div>
-    </div>
-</div>
 
-<script>
-    document.getElementById('uploadForm').addEventListener('submit', function() {
-        // Nasconde il pulsante e mostra l'animazione di caricamento
-        document.getElementById('submitBtn').style.display = 'none';
-        document.getElementById('progressContainer').style.display = 'block';
-    });
-</script>
+        <div class="tools-grid">
+            
+            <div class="tool-card">
+                <div class="tool-info">
+                    <h3>Comprimi in ZIP</h3>
+                    <p>Riduci le dimensioni dei tuoi file racchiudendoli in un archivio compresso leggero.</p>
+                </div>
+                <form action="/upload" method="POST" enctype="multipart/form-data" class="uploadForm">
+                    <input type="hidden" name="azione" value="comprimere">
+                    <label class="drop-zone">
+                        <span class="drop-zone-text">Clicca per selezionare un file</span>
+                        <input type="file" name="file" class="fileInput" required>
+                        <div class="file-selected-name"></div>
+                    </label>
+                    <button type="submit" class="btn-action">Comprimi</button>
+                    <div class="loader-container">
+                        <div class="spinner"></div>
+                        <div class="loader-text">Compressione in corso...</div>
+                    </div>
+                </form>
+            </div>
 
+            <div class="tool-card">
+                <div class="tool-info">
+                    <h3>Converti da PDF a Word</h3>
+                    <p>Estrai testi e tabelle da un documento PDF statico e trasformalo in un file Word modificabile.</p>
+                </div>
+                <form action="/upload" method="POST" enctype="multipart/form-data" class="uploadForm">
+                    <input type="hidden" name="azione" value="PDF a Word">
+                    <label class="drop-zone">
+                        <span class="drop-zone-text">Clicca per selezionare un file PDF</span>
+                        <input type="file" name="file" class="fileInput" accept=".pdf" required>
+                        <div class="file-selected-name"></div>
+                    </label>
+                    <button type="submit" class="btn-action">Converti in Word</button>
+                    <div class="loader-container">
+                        <div class="spinner"></div>
+                        <div class="loader-text">Conversione in corso...</div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="tool-card">
+                <div class="tool-info">
+                    <h3>Converti da Word a PDF</h3>
+                    <p>Proteggi la formattazione dei tuoi documenti di testo convertendo i file Word (.docx) in PDF.</p>
+                </div>
+                <form action="/upload" method="POST" enctype="multipart/form-data" class="uploadForm">
+                    <input type="hidden" name="azione" value="Word a PDF">
+                    <label class="drop-zone">
+                        <span class="drop-zone-text">Clicca per selezionare un file Word</span>
+                        <input type="file" name="file" class="fileInput" accept=".docx" required>
+                        <div class="file-selected-name"></div>
+                    </label>
+                    <button type="submit" class="btn-action">Converti in PDF</button>
+                    <div class="loader-container">
+                        <div class="spinner"></div>
+                        <div class="loader-text">Generazione PDF in corso...</div>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        // Gestione del nome del file quando viene selezionato
+        document.querySelectorAll('.fileInput').forEach(input => {
+            input.addEventListener('change', function() {
+                const textSpan = this.parentElement.querySelector('.drop-zone-text');
+                const nameDiv = this.parentElement.querySelector('.file-selected-name');
+                
+                if (this.files && this.files[0]) {
+                    textSpan.style.display = 'none';
+                    nameDiv.innerText = "📄 " + this.files[0].name;
+                    nameDiv.style.display = 'block';
+                }
+            });
+        });
+
+        // Gestione delle animazioni di caricamento al submit di ogni singolo form
+        document.querySelectorAll('.uploadForm').forEach(form => {
+            form.addEventListener('submit', function() {
+                const btn = this.querySelector('.btn-action');
+                const loader = this.querySelector('.loader-container');
+                const dropZone = this.querySelector('.drop-zone');
+                
+                btn.style.display = 'none';
+                dropZone.style.display = 'none';
+                loader.style.display = 'block';
+            });
+        });
+    </script>
 </body>
 </html>
