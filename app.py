@@ -1,5 +1,5 @@
 import os
-from flask import Flask, render_template, request, send_file
+from flask import Flask, render_template, request, send_file, after_this_request
 import zipfile
 from pdf2docx import Converter
 from docx import Document
@@ -12,19 +12,30 @@ if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
 
 def converti_word_in_pdf(docx_path, pdf_path):
-    # Legge il file Word ed estrae il testo riga per riga
     doc = Document(docx_path)
     c = canvas.Canvas(pdf_path, pagesize=letter)
     width, height = letter
-    y = height - 40  # Margine superiore
+    y = height - 40
     
     for para in doc.paragraphs:
-        if y < 40:  # Se la pagina è piena, creane una nuova
+        if y < 40:
             c.showPage()
             y = height - 40
         c.drawString(40, y, para.text)
-        y -= 20  # Spazio tra le righe
+        y -= 20
     c.save()
+
+def elimina_file_sicuro(funzione_rimozione, *file_paths):
+    """Programma l'eliminazione dei file subito dopo l'invio al client"""
+    @after_this_request
+    def remove_file(response):
+        for path in file_paths:
+            try:
+                if os.path.exists(path):
+                    os.remove(path)
+            except Exception as e:
+                print(f"Errore nella rimozione del file {path}: {e}")
+        return response
 
 @app.route('/')
 def index():
@@ -41,14 +52,16 @@ def upload_file():
     path_originale = os.path.join(UPLOAD_FOLDER, file.filename)
     file.save(path_originale)
     
-    # 1. FUNZIONE COMPRIMERE (ZIP)
+    # 1. COMPRIMERE (ZIP)
     if azione == 'comprimere':
         path_finale = path_originale + ".zip"
         with zipfile.ZipFile(path_finale, 'w', zipfile.ZIP_DEFLATED) as zipf:
             zipf.write(path_originale, file.filename)
+            
+        elimina_file_sicuro(None, path_originale, path_finale)
         return send_file(path_finale, as_attachment=True)
         
-    # 2. FUNZIONE PDF A WORD
+    # 2. PDF A WORD
     elif azione == 'PDF a Word':
         nome_base, _ = os.path.splitext(file.filename)
         path_finale = os.path.join(UPLOAD_FOLDER, nome_base + ".docx")
@@ -57,15 +70,17 @@ def upload_file():
         cv.convert(path_finale, start=0, end=None)
         cv.close()
         
+        elimina_file_sicuro(None, path_originale, path_finale)
         return send_file(path_finale, as_attachment=True)
         
-    # 3. FUNZIONE WORD A PDF
+    # 3. WORD A PDF
     elif azione == 'Word a PDF':
         nome_base, _ = os.path.splitext(file.filename)
         path_finale = os.path.join(UPLOAD_FOLDER, nome_base + ".pdf")
         
         converti_word_in_pdf(path_originale, path_finale)
         
+        elimina_file_sicuro(None, path_originale, path_finale)
         return send_file(path_finale, as_attachment=True)
         
     return "Azione non valida", 400
