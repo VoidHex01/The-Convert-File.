@@ -1,4 +1,5 @@
 import os
+import io
 from flask import Flask, render_template, request, send_file, after_this_request
 import zipfile
 from pdf2docx import Converter
@@ -7,13 +8,14 @@ from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 
 app = Flask(__name__)
-UPLOAD_FOLDER = 'uploads'
-if not os.path.exists(UPLOAD_FOLDER):
-    os.makedirs(UPLOAD_FOLDER)
 
-def converti_word_in_pdf(docx_path, pdf_path):
-    doc = Document(docx_path)
-    c = canvas.Canvas(pdf_path, pagesize=letter)
+def converti_word_in_pdf_ram(docx_bytes):
+    # Legge il file Word direttamente dalla RAM
+    doc = Document(io.BytesIO(docx_bytes))
+    
+    # Crea un contenitore in RAM per il PDF finale
+    pdf_buffer = io.BytesIO()
+    c = canvas.Canvas(pdf_buffer, pagesize=letter)
     width, height = letter
     y = height - 40
     
@@ -24,18 +26,9 @@ def converti_word_in_pdf(docx_path, pdf_path):
         c.drawString(40, y, para.text)
         y -= 20
     c.save()
-
-def elimina_file_sicuro(funzione_rimozione, *file_paths):
-    """Programma l'eliminazione dei file subito dopo l'invio al client"""
-    @after_this_request
-    def remove_file(response):
-        for path in file_paths:
-            try:
-                if os.path.exists(path):
-                    os.remove(path)
-            except Exception as e:
-                print(f"Errore nella rimozione del file {path}: {e}")
-        return response
+    
+    pdf_buffer.seek(0)
+    return pdf_buffer
 
 @app.route('/')
 def index():
@@ -49,39 +42,49 @@ def upload_file():
     
     if file.filename == '': return "Nessun file selezionato", 400
     
-    path_originale = os.path.join(UPLOAD_FOLDER, file.filename)
-    file.save(path_originale)
+    # Leggiamo il file direttamente in memoria RAM
+    file_bytes = file.read()
+    nome_base, _ = os.path.splitext(file.filename)
     
-    # 1. COMPRIMERE (ZIP)
+    # 1. COMPRIMERE (ZIP) IN RAM
     if azione == 'comprimere':
-        path_finale = path_originale + ".zip"
-        with zipfile.ZipFile(path_finale, 'w', zipfile.ZIP_DEFLATED) as zipf:
-            zipf.write(path_originale, file.filename)
-            
-        elimina_file_sicuro(None, path_originale, path_finale)
-        return send_file(path_finale, as_attachment=True)
+        zip_buffer = io.BytesIO()
+        with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zipf:
+            zipf.writestr(file.filename, file_bytes)
+        zip_buffer.seek(0)
+        return send_file(zip_buffer, download_name=f"{file.filename}.zip", as_attachment=True)
         
-    # 2. PDF A WORD
+    # 2. PDF A WORD (Usa file temporaneo solo perché richiesto dalla libreria esterna)
     elif azione == 'PDF a Word':
-        nome_base, _ = os.path.splitext(file.filename)
-        path_finale = os.path.join(UPLOAD_FOLDER, nome_base + ".docx")
+        # Creiamo al volo dei percorsi temporanei veloci
+        path_in = os.path.join("/tmp", file.filename)
+        path_out = os.path.join("/tmp", nome_base + ".docx")
         
-        cv = Converter(path_originale)
-        cv.convert(path_finale, start=0, end=None)
+        with open(path_in, "wb") as f:
+            f.write(file_bytes)
+            
+        cv = Converter(path_in)
+        cv.convert(path_out, start=0, end=None)
         cv.close()
         
-        elimina_file_sicuro(None, path_originale, path_finale)
-        return send_file(path_finale, as_attachment=True)
+        return_data = io.BytesIO()
+        with open(path_out, "rb") as f:
+            return_data.write(f.read())
+        return_data.seek(0)
         
-    # 3. WORD A PDF
+        # Pulizia immediata dei file temporanei
+        try:
+            os.remove(path_in)
+            os.remove(path_out)
+        except:
+            pass
+            
+        return send_file(return_data, download_name=f"{nome_base}.docx", as_attachment=True)
+        
+    # 3. WORD A PDF IN RAM
     elif azione == 'Word a PDF':
-        nome_base, _ = os.path.splitext(file.filename)
-        path_finale = os.path.join(UPLOAD_FOLDER, nome_base + ".pdf")
-        
-        converti_word_in_pdf(path_originale, path_finale)
-        
-        elimina_file_sicuro(None, path_originale, path_finale)
-        return send_file(path_finale, as_attachment=True)
+        pdf_buffer = converti_word_in_pdf_ram(file_bytes)
+        return send_file(pdf_buffer, download_name=f"{nome_base}.pdf", as_attachment=True)
         
     return "Azione non valida", 400
 
