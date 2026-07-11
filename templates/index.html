@@ -1,23 +1,193 @@
 <!DOCTYPE html>
-<html>
+<html lang="it">
 <head>
-    <title>Master File - LIVE</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Convert File</title>
     <style>
-        body { background: #0f172a; color: white; font-family: sans-serif; text-align: center; padding: 50px; }
-        .box { background: #1e293b; padding: 40px; border-radius: 20px; max-width: 500px; margin: auto; }
-        input { margin-bottom: 20px; color: white; }
-        button { background: #a3e635; color: black; border: none; padding: 15px 30px; border-radius: 10px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px; }
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --accent-color: #38bdf8;
+            --text-color: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: var(--card-bg);
+            padding: 2.5rem;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+            border: 1px solid #334155;
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: var(--accent-color);
+        }
+
+        p.subtitle {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        input[type="file"] {
+            width: 100%;
+            padding: 0.75rem;
+            background: #0f172a;
+            border: 2px dashed #475569;
+            border-radius: 8px;
+            color: var(--text-color);
+            box-sizing: border-box;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+
+        input[type="file"]:hover {
+            border-color: var(--accent-color);
+        }
+
+        select {
+            width: 100%;
+            padding: 0.75rem;
+            background: #0f172a;
+            border: 1px solid #475569;
+            border-radius: 8px;
+            color: var(--text-color);
+            font-size: 1rem;
+            outline: none;
+            cursor: pointer;
+        }
+
+        button {
+            width: 100%;
+            padding: 0.75rem;
+            background-color: var(--accent-color);
+            color: #0f172a;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.1s, background-color 0.2s;
+            margin-top: 1rem;
+        }
+
+        button:hover {
+            background-color: #7dd3fc;
+            transform: translateY(-1px);
+        }
+
+        button:active {
+            transform: translateY(1px);
+        }
+
+        /* Barra di Caricamento */
+        .progress-container {
+            display: none;
+            margin-top: 1.5rem;
+        }
+
+        .progress-text {
+            font-size: 0.85rem;
+            color: var(--accent-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background-color: #475569;
+            border-radius: 3px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            width: 30%;
+            height: 100%;
+            background-color: var(--accent-color);
+            border-radius: 3px;
+            position: absolute;
+            animation: loading 1.5s infinite ease-in-out;
+        }
+
+        @keyframes loading {
+            0% { left: -30%; }
+            50% { left: 100%; }
+            100% { left: 100%; }
+        }
     </style>
 </head>
 <body>
-    <div class="box">
-        <h1>Master File</h1>
-        <form action="/upload" method="post" enctype="multipart/form-data">
-            <input type="file" name="file" required><br>
-            <button type="submit" name="azione" value="comprimere">COMPATTA FILE</button>
-            <button type="submit" name="azione" value="PDF a Word">PDF ➔ WORD</button>
-            <button type="submit" name="azione" value="Word a PDF">WORD ➔ PDF</button>
-        </form>
+
+<div class="container">
+    <h1>The Convert File</h1>
+    <p class="subtitle">Comprimi o converti i tuoi documenti in un click</p>
+    
+    <form action="/upload" method="POST" enctype="multipart/form-data" id="uploadForm">
+        <div class="form-group">
+            <label for="file">Seleziona il file</label>
+            <input type="file" name="file" id="file" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="azione">Scegli l'operazione</label>
+            <select name="azione" id="azione">
+                <option value="comprimere">Comprimi in ZIP</option>
+                <option value="PDF a Word">Converti da PDF a Word</option>
+                <option value="Word a PDF">Converti da Word a PDF</option>
+            </select>
+        </div>
+        
+        <button type="submit" id="submitBtn">Elabora File</button>
+    </form>
+
+    <div class="progress-container" id="progressContainer">
+        <div class="progress-text">Elaborazione sul server in corso...</div>
+        <div class="progress-bar">
+            <div class="progress-fill"></div>
+        </div>
     </div>
+</div>
+
+<script>
+    document.getElementById('uploadForm').addEventListener('submit', function() {
+        // Nasconde il pulsante e mostra l'animazione di caricamento
+        document.getElementById('submitBtn').style.display = 'none';
+        document.getElementById('progressContainer').style.display = 'block';
+    });
+</script>
+
 </body>
 </html>
