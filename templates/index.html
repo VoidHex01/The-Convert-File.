@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <meta name="google-site-verification" content="eBhGHO9dbLQA282sW8RPN6T6L3KIHmI5zKDRl8lKYMQ" />
+    <meta name="google-site-verification" content="eBhGH09dbLQA282sW8RPN6T6L3KIHmI5zKDR181KYMQ" />
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Convert File - Strumenti di Conversione Professionali</title>
@@ -15,8 +15,8 @@
             --text-main: #f9fafb;
             --text-muted: #9ca3af;
             --border: #374151;
+            --error: #ef4444;
         }
-
         body {
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
             background-color: var(--bg-primary);
@@ -27,8 +27,6 @@
             display: flex;
             flex-direction: column;
         }
-
-        /* NAVBAR SUPERIORE */
         header {
             background-color: var(--bg-secondary);
             border-bottom: 1px solid var(--border);
@@ -37,7 +35,6 @@
             justify-content: space-between;
             align-items: center;
         }
-
         header .logo {
             font-size: 1.3rem;
             font-weight: 800;
@@ -45,7 +42,6 @@
             text-transform: uppercase;
             letter-spacing: 1px;
         }
-
         header .version {
             font-size: 0.8rem;
             background: var(--border);
@@ -53,8 +49,6 @@
             border-radius: 20px;
             color: var(--text-muted);
         }
-
-        /* AREA PRINCIPALE */
         main {
             flex: 1;
             max-width: 1200px;
@@ -63,30 +57,24 @@
             padding: 3rem 2rem;
             box-sizing: border-box;
         }
-
         .hero-section {
             text-align: center;
             margin-bottom: 4rem;
         }
-
         .hero-section h1 {
             font-size: 2.5rem;
             font-weight: 800;
             margin-bottom: 0.5rem;
         }
-
         .hero-section p {
             color: var(--text-muted);
             font-size: 1.1rem;
         }
-
-        /* GRIGLIA DEGLI STRUMENTI */
         .tools-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 2rem;
         }
-
         .tool-card {
             background-color: var(--bg-secondary);
             border: 1px solid var(--border);
@@ -97,27 +85,22 @@
             flex-direction: column;
             justify-content: space-between;
         }
-
         .tool-card:hover {
             transform: translateY(-4px);
             border-color: var(--accent);
             box-shadow: 0 10px 20px -10px rgba(56, 189, 248, 0.2);
         }
-
         .tool-info h3 {
             font-size: 1.3rem;
             margin-top: 0;
             margin-bottom: 0.5rem;
         }
-
         .tool-info p {
             color: var(--text-muted);
             font-size: 0.9rem;
             line-height: 1.5;
             margin-bottom: 1.5rem;
         }
-
-        /* FORM DI CARICAMENTO STILE DRAG & DROP */
         .drop-zone {
             border: 2px dashed var(--border);
             border-radius: 8px;
@@ -125,23 +108,22 @@
             text-align: center;
             background-color: var(--bg-primary);
             cursor: pointer;
-            transition: border-color 0.2s;
+            transition: all 0.2s ease;
             margin-bottom: 1rem;
+            display: block;
         }
-
-        .drop-zone:hover {
+        .drop-zone.drag-over {
             border-color: var(--accent);
+            background-color: rgba(56, 189, 248, 0.05);
+            transform: scale(1.02);
         }
-
         .drop-zone input[type="file"] {
             display: none;
         }
-
         .drop-zone-text {
             font-size: 0.85rem;
             color: var(--text-muted);
         }
-
         .file-selected-name {
             font-size: 0.85rem;
             color: var(--accent);
@@ -150,7 +132,13 @@
             display: none;
             word-break: break-all;
         }
-
+        .error-message {
+            font-size: 0.8rem;
+            color: var(--error);
+            margin-top: 0.5rem;
+            display: none;
+            font-weight: 600;
+        }
         .btn-action {
             width: 100%;
             padding: 0.75rem;
@@ -163,18 +151,14 @@
             cursor: pointer;
             transition: background-color 0.2s;
         }
-
         .btn-action:hover {
             background-color: var(--accent-hover);
         }
-
-        /* STATO DI CARICAMENTO */
         .loader-container {
             display: none;
             text-align: center;
             padding: 1rem 0;
         }
-
         .spinner {
             width: 24px;
             height: 24px;
@@ -184,12 +168,10 @@
             animation: spin 1s linear infinite;
             margin: 0 auto 0.5rem auto;
         }
-
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-
         .loader-text {
             font-size: 0.85rem;
             color: var(--accent);
@@ -197,20 +179,16 @@
     </style>
 </head>
 <body>
-
     <header>
         <div class="logo">The Convert File</div>
-        <div class="version">v2.0 Professional</div>
+        <div class="version">v2.1 Pro</div>
     </header>
-
     <main>
         <div class="hero-section">
             <h1>Soluzioni per i tuoi file in un unico posto</h1>
-            <p>Semplice, veloce, sicuro e ottimizzato per il cloud computing.</p>
+            <p>Trascina i tuoi documenti ed elaborali all'istante.</p>
         </div>
-
         <div class="tools-grid">
-            
             <div class="tool-card">
                 <div class="tool-info">
                     <h3>Comprimi in ZIP</h3>
@@ -219,9 +197,10 @@
                 <form action="/upload" method="POST" enctype="multipart/form-data" class="uploadForm">
                     <input type="hidden" name="azione" value="comprimere">
                     <label class="drop-zone">
-                        <span class="drop-zone-text">Clicca per selezionare un file</span>
+                        <span class="drop-zone-text">Trascina qui il file o clicca</span>
                         <input type="file" name="file" class="fileInput" required>
                         <div class="file-selected-name"></div>
+                        <div class="error-message">File troppo grande! Max 15MB.</div>
                     </label>
                     <button type="submit" class="btn-action">Comprimi</button>
                     <div class="loader-container">
@@ -230,7 +209,6 @@
                     </div>
                 </form>
             </div>
-
             <div class="tool-card">
                 <div class="tool-info">
                     <h3>Converti da PDF a Word</h3>
@@ -239,9 +217,10 @@
                 <form action="/upload" method="POST" enctype="multipart/form-data" class="uploadForm">
                     <input type="hidden" name="azione" value="PDF a Word">
                     <label class="drop-zone">
-                        <span class="drop-zone-text">Clicca per selezionare un file PDF</span>
+                        <span class="drop-zone-text">Trascina qui il PDF o clicca</span>
                         <input type="file" name="file" class="fileInput" accept=".pdf" required>
                         <div class="file-selected-name"></div>
+                        <div class="error-message">File troppo grande! Max 15MB.</div>
                     </label>
                     <button type="submit" class="btn-action">Converti in Word</button>
                     <div class="loader-container">
@@ -250,7 +229,6 @@
                     </div>
                 </form>
             </div>
-
             <div class="tool-card">
                 <div class="tool-info">
                     <h3>Converti da Word a PDF</h3>
@@ -259,9 +237,10 @@
                 <form action="/upload" method="POST" enctype="multipart/form-data" class="uploadForm">
                     <input type="hidden" name="azione" value="Word a PDF">
                     <label class="drop-zone">
-                        <span class="drop-zone-text">Clicca per selezionare un file Word</span>
+                        <span class="drop-zone-text">Trascina qui il file Word o clicca</span>
                         <input type="file" name="file" class="fileInput" accept=".docx" required>
                         <div class="file-selected-name"></div>
+                        <div class="error-message">File troppo grande! Max 15MB.</div>
                     </label>
                     <button type="submit" class="btn-action">Converti in PDF</button>
                     <div class="loader-container">
@@ -270,32 +249,67 @@
                     </div>
                 </form>
             </div>
-
         </div>
     </main>
-
     <script>
-        // Gestione del nome del file quando viene selezionato
-        document.querySelectorAll('.fileInput').forEach(input => {
+        const MAX_SIZE = 15 * 1024 * 1024;
+        document.querySelectorAll('.drop-zone').forEach(dropZone => {
+            const input = dropZone.querySelector('.fileInput');
+            const textSpan = dropZone.querySelector('.drop-zone-text');
+            const nameDiv = dropZone.querySelector('.file-selected-name');
+            const errorDiv = dropZone.querySelector('.error-message');
+            const form = dropZone.closest('form');
+            const btn = form.querySelector('.btn-action');
+            dropZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropZone.classList.add('drag-over');
+            });
+            ['dragleave', 'dragend'].forEach(type => {
+                dropZone.addEventListener(type, () => {
+                    dropZone.classList.remove('drag-over');
+                });
+            });
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('drag-over');
+                if (e.dataTransfer.files.length) {
+                    input.files = e.dataTransfer.files;
+                    handleFileSelection(input.files[0], textSpan, nameDiv, errorDiv, btn);
+                }
+            });
             input.addEventListener('change', function() {
-                const textSpan = this.parentElement.querySelector('.drop-zone-text');
-                const nameDiv = this.parentElement.querySelector('.file-selected-name');
-                
                 if (this.files && this.files[0]) {
-                    textSpan.style.display = 'none';
-                    nameDiv.innerText = "📄 " + this.files[0].name;
-                    nameDiv.style.display = 'block';
+                    handleFileSelection(this.files[0], textSpan, nameDiv, errorDiv, btn);
                 }
             });
         });
-
-        // Gestione delle animazioni di caricamento al submit di ogni singolo form
+        function handleFileSelection(file, textSpan, nameDiv, errorDiv, btn) {
+            if (file.size > MAX_SIZE) {
+                errorDiv.style.display = 'block';
+                nameDiv.style.display = 'none';
+                textSpan.style.display = 'block';
+                btn.disabled = true;
+                btn.style.opacity = '0.5';
+                btn.style.cursor = 'not-allowed';
+            } else {
+                errorDiv.style.display = 'none';
+                textSpan.style.display = 'none';
+                nameDiv.innerText = "📄 " + file.name;
+                nameDiv.style.display = 'block';
+                btn.disabled = false;
+                btn.style.opacity = '1';
+                btn.style.cursor = 'pointer';
+            }
+        }
         document.querySelectorAll('.uploadForm').forEach(form => {
-            form.addEventListener('submit', function() {
+            form.addEventListener('submit', function(e) {
                 const btn = this.querySelector('.btn-action');
+                if(btn.disabled) {
+                    e.preventDefault();
+                    return;
+                }
                 const loader = this.querySelector('.loader-container');
                 const dropZone = this.querySelector('.drop-zone');
-                
                 btn.style.display = 'none';
                 dropZone.style.display = 'none';
                 loader.style.display = 'block';
