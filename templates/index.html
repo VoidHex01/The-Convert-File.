@@ -1,3 +1,4 @@
+HTML
 <!DOCTYPE html>
 <html lang="it">
 <head>
@@ -5,6 +6,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Convert File - Strumenti di Conversione Professionali</title>
+    
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔄</text></svg>">
+
     <style>
         :root {
             --bg-primary: #0b0f19;
@@ -154,8 +158,6 @@
         .btn-action:hover {
             background-color: var(--accent-hover);
         }
-        
-        /* NUOVA BARRA DI PROGRESSO REALE */
         .progress-container {
             display: none;
             margin-top: 1rem;
@@ -181,12 +183,27 @@
             display: flex;
             justify-content: space-between;
         }
+
+        /* STILE DEL PIÈ DI PAGINA (FOOTER) */
+        footer {
+            background-color: var(--bg-secondary);
+            border-top: 1px solid var(--border);
+            text-align: center;
+            padding: 1.5rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 4rem;
+        }
+        footer span {
+            color: var(--accent);
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
     <header>
         <div class="logo">The Convert File</div>
-        <div class="version">v2.2 Ultra</div>
+        <div class="version">v2.3 Premium</div>
     </header>
     <main>
         <div class="hero-section">
@@ -256,6 +273,11 @@
             </div>
         </div>
     </main>
+
+    <footer>
+        &copy; 2026 The Convert File. Sviluppato con 💻 da <span>VoidHex</span>. Tutti i diritti riservati.
+    </footer>
+
     <script>
         const MAX_SIZE = 15 * 1024 * 1024;
         document.querySelectorAll('.drop-zone').forEach(dropZone => {
@@ -306,31 +328,23 @@
                 btn.style.cursor = 'pointer';
             }
         }
-
-        // GESTIONE INVIO ASINCRONO CON ABILITAZIONE DELLA BARRA REALE
         document.querySelectorAll('.uploadForm').forEach(form => {
             form.addEventListener('submit', function(e) {
                 e.preventDefault();
                 const btn = this.querySelector('.btn-action');
                 if(btn.disabled) return;
-                
                 const dropZone = this.querySelector('.drop-zone');
                 const progContainer = this.querySelector('.progress-container');
                 const progFill = this.querySelector('.progress-bar-fill');
                 const percentMsg = this.querySelector('.percent-msg');
                 const statusMsg = this.querySelector('.status-msg');
                 const fileInput = this.querySelector('.fileInput');
-                
                 if (!fileInput.files.length) return;
-
                 btn.style.display = 'none';
                 dropZone.style.display = 'none';
                 progContainer.style.display = 'block';
-
                 const formData = new FormData(this);
                 const xhr = new XMLHttpRequest();
-
-                // Intercettiamo il caricamento reale del file
                 xhr.upload.addEventListener('progress', function(e) {
                     if (e.lengthComputable) {
                         const percent = Math.round((e.loaded / e.total) * 100);
@@ -341,16 +355,12 @@
                         }
                     }
                 });
-
                 xhr.open('POST', '/upload', true);
                 xhr.responseType = 'blob';
-
                 xhr.onload = function() {
                     if (xhr.status === 200) {
                         statusMsg.innerText = "Completato!";
-                        progFill.style.backgroundColor = "#10b981"; // Diventa verde al successo
-                        
-                        // Avvia il download automatico del file restituito dalla RAM
+                        progFill.style.backgroundColor = "#10b981";
                         const blob = xhr.response;
                         const disposition = xhr.getResponseHeader('Content-Disposition');
                         let filename = "file_convertito";
@@ -359,7 +369,6 @@
                             const matches = filenameRegex.exec(disposition);
                             if (matches != null && matches[1]) filename = matches[1].replace(/['"]/g, '');
                         }
-                        
                         const downloadUrl = window.URL.createObjectURL(blob);
                         const a = document.createElement("a");
                         a.href = downloadUrl;
@@ -367,8 +376,6 @@
                         document.body.appendChild(a);
                         a.click();
                         a.remove();
-                        
-                        // Ripristina l'interfaccia dopo 2 secondi
                         setTimeout(() => {
                             progContainer.style.display = 'none';
                             progFill.style.width = '0%';
@@ -388,7 +395,6 @@
                         progContainer.style.display = 'none';
                     }
                 }.bind(this);
-
                 xhr.send(formData);
             });
         });
