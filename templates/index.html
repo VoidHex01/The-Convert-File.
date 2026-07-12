@@ -39,8 +39,6 @@
             justify-content: space-between;
             align-items: center;
         }
-        
-        /* STRUTTURA LOGO PROFESSIONALE */
         .logo-container {
             display: flex;
             align-items: center;
@@ -197,8 +195,6 @@
             display: flex;
             justify-content: space-between;
         }
-
-        /* STILE PER LA NUOVA FEATURE KILLER: L'EDITOR DI TESTO */
         .editor-container {
             display: none;
             background-color: var(--bg-primary);
@@ -228,15 +224,15 @@
         .btn-editor-submit {
             margin-top: 0.5rem;
             width: 100%;
-            padding: 0.5rem;
+            padding: 0.75rem;
             background-color: var(--success);
             color: var(--text-main);
             border: none;
-            border-radius: 4px;
+            border-radius: 6px;
             font-weight: bold;
             cursor: pointer;
+            font-size: 0.95rem;
         }
-
         footer {
             background-color: var(--bg-secondary);
             border-top: 1px solid var(--border);
@@ -326,6 +322,8 @@
                         <div class="file-selected-name" id="wordFileName"></div>
                     </label>
                     
+                    <button type="button" class="btn-action" id="wordFakeBtn">Leggi Documento</button>
+
                     <div class="editor-container" id="smartEditorBlock">
                         <h4>📝 Modifica il testo prima di salvare in PDF:</h4>
                         <textarea class="editor-area" id="editorTextArea"></textarea>
@@ -349,7 +347,6 @@
     <script>
         const MAX_SIZE = 15 * 1024 * 1024;
 
-        // Gestione drag & drop visivo per tutti i campi
         document.querySelectorAll('.drop-zone').forEach(dropZone => {
             const input = dropZone.querySelector('input[type="file"]');
             dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('drag-over'); });
@@ -364,7 +361,6 @@
             });
         });
 
-        // Monitoraggio selezione file per Strumenti 1 e 2
         document.querySelectorAll('.fileInput').forEach(input => {
             input.addEventListener('change', function() {
                 const dropZone = this.closest('.drop-zone');
@@ -395,7 +391,6 @@
             });
         });
 
-        // Invio asincrono standard per strumenti ZIP e PDF
         document.querySelectorAll('.uploadForm').forEach(form => {
             form.addEventListener('submit', function(e) {
                 e.preventDefault();
@@ -457,15 +452,16 @@
             });
         });
 
-        // ==========================================
-        // LOGICA AVANZATA PER L'EDITOR LIVE (TOOL 3)
-        // ==========================================
         const wordInput = document.getElementById('wordFileInput');
+        const wordFakeBtn = document.getElementById('wordFakeBtn');
         const smartEditorBlock = document.getElementById('smartEditorBlock');
         const editorTextArea = document.getElementById('editorTextArea');
         const wordProgressContainer = document.getElementById('wordProgressContainer');
         const wordStatusMsg = document.getElementById('wordStatusMsg');
         let currentEditingFilename = "";
+
+        // Se cliccano sul finto bottone iniziale, aprono la scelta file
+        wordFakeBtn.addEventListener('click', () => wordInput.click());
 
         wordInput.addEventListener('change', function() {
             if (!this.files.length) return;
@@ -475,8 +471,9 @@
             currentEditingFilename = file.name;
             document.getElementById('wordFileName').innerText = "📄 " + file.name;
             document.getElementById('wordFileName').style.display = 'block';
+            document.getElementById('wordDropZone').querySelector('.drop-zone-text').style.display = 'none';
             
-            // Invio a Python per estrarre il testo
+            wordFakeBtn.style.display = 'none';
             wordProgressContainer.style.display = 'block';
             wordStatusMsg.innerText = "Estrazione testo dal file Word...";
 
@@ -487,9 +484,8 @@
             .then(res => res.json())
             .then(data => {
                 wordProgressContainer.style.display = 'none';
-                if(data.error) { alert("Errore lettura Word: " + data.error); }
+                if(data.error) { alert("Errore lettura Word: " + data.error); wordFakeBtn.style.display = 'block'; }
                 else {
-                    // Metti il testo dentro l'editor web
                     editorTextArea.value = data.paragrafi.join("\n");
                     document.getElementById('wordDropZone').style.display = 'none';
                     smartEditorBlock.style.display = 'block';
@@ -497,6 +493,7 @@
             })
             .catch(() => {
                 wordProgressContainer.style.display = 'none';
+                wordFakeBtn.style.display = 'block';
                 alert("Impossibile connettersi al server.");
             });
         });
@@ -525,8 +522,10 @@
                 setTimeout(() => {
                     wordProgressContainer.style.display = 'none';
                     document.getElementById('wordDropZone').style.display = 'block';
+                    document.getElementById('wordDropZone').querySelector('.drop-zone-text').style.display = 'block';
                     wordInput.value = "";
                     document.getElementById('wordFileName').style.display = 'none';
+                    wordFakeBtn.style.display = 'block';
                 }, 2000);
             })
             .catch(() => {
