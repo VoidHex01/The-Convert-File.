@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Convert File - Strumenti di Conversione Professionali</title>
     
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔄</text></svg>">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23111827'/><path d='M30 35h30v40H30z' fill='none' stroke='%2338bdf8' stroke-width='6'/><path d='M45 25h30v40H45z' fill='none' stroke='%237dd3fc' stroke-width='4' stroke-dasharray='4'/><path d='M35 55l15-15 15 15' fill='none' stroke='%2338bdf8' stroke-width='6' stroke-linecap='round' stroke-linejoin='round'/></svg>">
 
     <style>
         :root {
@@ -19,6 +19,7 @@
             --text-muted: #9ca3af;
             --border: #374151;
             --error: #ef4444;
+            --success: #10b981;
         }
         body {
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
@@ -38,12 +39,26 @@
             justify-content: space-between;
             align-items: center;
         }
-        header .logo {
-            font-size: 1.3rem;
+        
+        /* STRUTTURA LOGO PROFESSIONALE */
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .logo-svg {
+            width: 35px;
+            height: 35px;
+        }
+        header .logo-text {
+            font-size: 1.4rem;
             font-weight: 800;
-            color: var(--accent);
+            color: var(--text-main);
             text-transform: uppercase;
             letter-spacing: 1px;
+        }
+        header .logo-text span {
+            color: var(--accent);
         }
         header .version {
             font-size: 0.8rem;
@@ -183,7 +198,45 @@
             justify-content: space-between;
         }
 
-        /* STILE DEL PIÈ DI PAGINA (FOOTER) */
+        /* STILE PER LA NUOVA FEATURE KILLER: L'EDITOR DI TESTO */
+        .editor-container {
+            display: none;
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+        .editor-container h4 {
+            margin: 0 0 0.5rem 0;
+            font-size: 0.9rem;
+            color: var(--accent);
+        }
+        .editor-area {
+            width: 100%;
+            height: 150px;
+            background-color: var(--bg-secondary);
+            color: var(--text-main);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 0.5rem;
+            box-sizing: border-box;
+            font-family: inherit;
+            resize: vertical;
+            font-size: 0.85rem;
+        }
+        .btn-editor-submit {
+            margin-top: 0.5rem;
+            width: 100%;
+            padding: 0.5rem;
+            background-color: var(--success);
+            color: var(--text-main);
+            border: none;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
         footer {
             background-color: var(--bg-secondary);
             border-top: 1px solid var(--border);
@@ -201,39 +254,49 @@
 </head>
 <body>
     <header>
-        <div class="logo">The Convert File</div>
-        <div class="version">v2.3 Premium</div>
+        <div class="logo-container">
+            <svg class="logo-svg" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="100" height="100" rx="22" fill="#111827"/>
+                <path d="M28 36H62V78H28V36Z" stroke="#38bdf8" stroke-width="6" stroke-linejoin="round"/>
+                <path d="M44 22H72V62" stroke="#7dd3fc" stroke-width="4" stroke-linecap="round" stroke-dasharray="6 4"/>
+                <path d="M38 58L50 46L62 58" stroke="#38bdf8" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <div class="logo-text">The <span>Convert</span> File</div>
+        </div>
+        <div class="version">v3.0 Ultra Pro</div>
     </header>
     <main>
         <div class="hero-section">
             <h1>Soluzioni per i tuoi file in un unico posto</h1>
-            <p>Trascina i tuoi documenti ed elaborali all'istante.</p>
+            <p>Sperimenta la potenza delle conversioni di massa e dell'editing immediato.</p>
         </div>
         <div class="tools-grid">
+            
             <div class="tool-card">
                 <div class="tool-info">
-                    <h3>Comprimi in ZIP</h3>
-                    <p>Riduci le dimensioni dei tuoi file racchiudendoli in un archivio compresso leggero.</p>
+                    <h3>Comprimi in ZIP (Multi-File)</h3>
+                    <p>Trascina **anche più file contemporaneamente**. Il sistema li unirà in un unico archivio.</p>
                 </div>
                 <form class="uploadForm">
                     <input type="hidden" name="azione" value="comprimere">
                     <label class="drop-zone">
-                        <span class="drop-zone-text">Trascina qui il file o clicca</span>
-                        <input type="file" name="file" class="fileInput" required>
+                        <span class="drop-zone-text">Trascina qui i file o clicca</span>
+                        <input type="file" name="file" class="fileInput" multiple required>
                         <div class="file-selected-name"></div>
-                        <div class="error-message">File troppo grande! Max 15MB.</div>
+                        <div class="error-message">Uno o più file superano i 15MB!</div>
                     </label>
-                    <button type="submit" class="btn-action">Comprimi</button>
+                    <button type="submit" class="btn-action">Comprimi File</button>
                     <div class="progress-container">
                         <div class="progress-bar-bg"><div class="progress-bar-fill"></div></div>
                         <div class="progress-text"><span class="status-msg">Caricamento...</span><span class="percent-msg">0%</span></div>
                     </div>
                 </form>
             </div>
+
             <div class="tool-card">
                 <div class="tool-info">
                     <h3>Converti da PDF a Word</h3>
-                    <p>Estrai testi e tabelle da un documento PDF statico e trasformalo in un file Word modificabile.</p>
+                    <p>Estrai testi da un documento PDF statico e trasformalo in un file Word modificabile.</p>
                 </div>
                 <form class="uploadForm">
                     <input type="hidden" name="azione" value="PDF a Word">
@@ -250,26 +313,32 @@
                     </div>
                 </form>
             </div>
+
             <div class="tool-card">
                 <div class="tool-info">
-                    <h3>Converti da Word a PDF</h3>
-                    <p>Proteggi la formattazione dei tuoi documenti di testo convertendo i file Word (.docx) in PDF.</p>
+                    <h3>Smart Word a PDF Editor</h3>
+                    <p>Trascina un file Word per **leggerlo e modificarlo direttamente qui** sul browser prima di generare il PDF.</p>
                 </div>
-                <form class="uploadForm">
-                    <input type="hidden" name="azione" value="Word a PDF">
-                    <label class="drop-zone">
-                        <span class="drop-zone-text">Trascina qui il file Word o clicca</span>
-                        <input type="file" name="file" class="fileInput" accept=".docx" required>
-                        <div class="file-selected-name"></div>
-                        <div class="error-message">File troppo grande! Max 15MB.</div>
+                <div id="wordToolContainer">
+                    <label class="drop-zone" id="wordDropZone">
+                        <span class="drop-zone-text">Trascina il file .docx o clicca</span>
+                        <input type="file" id="wordFileInput" accept=".docx" required>
+                        <div class="file-selected-name" id="wordFileName"></div>
                     </label>
-                    <button type="submit" class="btn-action">Converti in PDF</button>
-                    <div class="progress-container">
-                        <div class="progress-bar-bg"><div class="progress-bar-fill"></div></div>
-                        <div class="progress-text"><span class="status-msg">Generazione...</span><span class="percent-msg">0%</span></div>
+                    
+                    <div class="editor-container" id="smartEditorBlock">
+                        <h4>📝 Modifica il testo prima di salvare in PDF:</h4>
+                        <textarea class="editor-area" id="editorTextArea"></textarea>
+                        <button type="button" class="btn-editor-submit" id="btnEditorConvert">Genera PDF Modificato</button>
                     </div>
-                </form>
+
+                    <div class="progress-container" id="wordProgressContainer">
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" id="wordProgressFill"></div></div>
+                        <div class="progress-text"><span id="wordStatusMsg">Lettura documento...</span></div>
+                    </div>
+                </div>
             </div>
+
         </div>
     </main>
 
@@ -279,54 +348,54 @@
 
     <script>
         const MAX_SIZE = 15 * 1024 * 1024;
+
+        // Gestione drag & drop visivo per tutti i campi
         document.querySelectorAll('.drop-zone').forEach(dropZone => {
-            const input = dropZone.querySelector('.fileInput');
-            const textSpan = dropZone.querySelector('.drop-zone-text');
-            const nameDiv = dropZone.querySelector('.file-selected-name');
-            const errorDiv = dropZone.querySelector('.error-message');
-            const form = dropZone.closest('form');
-            const btn = form.querySelector('.btn-action');
-            dropZone.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                dropZone.classList.add('drag-over');
-            });
-            ['dragleave', 'dragend'].forEach(type => {
-                dropZone.addEventListener(type, () => {
-                    dropZone.classList.remove('drag-over');
-                });
-            });
+            const input = dropZone.querySelector('input[type="file"]');
+            dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+            ['dragleave', 'dragend'].forEach(t => dropZone.addEventListener(t, () => dropZone.classList.remove('drag-over')));
             dropZone.addEventListener('drop', (e) => {
                 e.preventDefault();
                 dropZone.classList.remove('drag-over');
                 if (e.dataTransfer.files.length) {
                     input.files = e.dataTransfer.files;
-                    handleFileSelection(input.files[0], textSpan, nameDiv, errorDiv, btn);
-                }
-            });
-            input.addEventListener('change', function() {
-                if (this.files && this.files[0]) {
-                    handleFileSelection(this.files[0], textSpan, nameDiv, errorDiv, btn);
+                    input.dispatchEvent(new Event('change'));
                 }
             });
         });
-        function handleFileSelection(file, textSpan, nameDiv, errorDiv, btn) {
-            if (file.size > MAX_SIZE) {
-                errorDiv.style.display = 'block';
-                nameDiv.style.display = 'none';
-                textSpan.style.display = 'block';
-                btn.disabled = true;
-                btn.style.opacity = '0.5';
-                btn.style.cursor = 'not-allowed';
-            } else {
-                errorDiv.style.display = 'none';
-                textSpan.style.display = 'none';
-                nameDiv.innerText = "📄 " + file.name;
-                nameDiv.style.display = 'block';
-                btn.disabled = false;
-                btn.style.opacity = '1';
-                btn.style.cursor = 'pointer';
-            }
-        }
+
+        // Monitoraggio selezione file per Strumenti 1 e 2
+        document.querySelectorAll('.fileInput').forEach(input => {
+            input.addEventListener('change', function() {
+                const dropZone = this.closest('.drop-zone');
+                const textSpan = dropZone.querySelector('.drop-zone-text');
+                const nameDiv = dropZone.querySelector('.file-selected-name');
+                const errorDiv = dropZone.querySelector('.error-message');
+                const btn = this.closest('form') ? this.closest('form').querySelector('.btn-action') : null;
+
+                let sizeOk = true;
+                let names = [];
+                for(let i=0; i<this.files.length; i++) {
+                    names.push(this.files[i].name);
+                    if(this.files[i].size > MAX_SIZE) sizeOk = false;
+                }
+
+                if (!sizeOk) {
+                    errorDiv.style.display = 'block';
+                    nameDiv.style.display = 'none';
+                    textSpan.style.display = 'block';
+                    if(btn) { btn.disabled = true; btn.style.opacity = '0.5'; }
+                } else {
+                    errorDiv.style.display = 'none';
+                    textSpan.style.display = 'none';
+                    nameDiv.innerText = this.files.length > 1 ? `📚 Selected ${this.files.length} file` : "📄 " + names[0];
+                    nameDiv.style.display = 'block';
+                    if(btn) { btn.disabled = false; btn.style.opacity = '1'; }
+                }
+            });
+        });
+
+        // Invio asincrono standard per strumenti ZIP e PDF
         document.querySelectorAll('.uploadForm').forEach(form => {
             form.addEventListener('submit', function(e) {
                 e.preventDefault();
@@ -337,21 +406,19 @@
                 const progFill = this.querySelector('.progress-bar-fill');
                 const percentMsg = this.querySelector('.percent-msg');
                 const statusMsg = this.querySelector('.status-msg');
-                const fileInput = this.querySelector('.fileInput');
-                if (!fileInput.files.length) return;
+                
                 btn.style.display = 'none';
                 dropZone.style.display = 'none';
                 progContainer.style.display = 'block';
+
                 const formData = new FormData(this);
                 const xhr = new XMLHttpRequest();
-                xhr.upload.addEventListener('progress', function(e) {
-                    if (e.lengthComputable) {
-                        const percent = Math.round((e.loaded / e.total) * 100);
+                xhr.upload.addEventListener('progress', function(ev) {
+                    if (ev.lengthComputable) {
+                        const percent = Math.round((ev.loaded / ev.total) * 100);
                         progFill.style.width = percent + '%';
                         percentMsg.innerText = percent + '%';
-                        if(percent === 100){
-                            statusMsg.innerText = "Elaborazione file in corso...";
-                        }
+                        if(percent === 100) statusMsg.innerText = "Elaborazione in corso...";
                     }
                 });
                 xhr.open('POST', '/upload', true);
@@ -359,42 +426,113 @@
                 xhr.onload = function() {
                     if (xhr.status === 200) {
                         statusMsg.innerText = "Completato!";
-                        progFill.style.backgroundColor = "#10b981";
+                        progFill.style.backgroundColor = "var(--success)";
                         const blob = xhr.response;
                         const disposition = xhr.getResponseHeader('Content-Disposition');
                         let filename = "file_convertito";
                         if (disposition && disposition.indexOf('attachment') !== -1) {
-                            const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
-                            const matches = filenameRegex.exec(disposition);
+                            const matches = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/.exec(disposition);
                             if (matches != null && matches[1]) filename = matches[1].replace(/['"]/g, '');
                         }
                         const downloadUrl = window.URL.createObjectURL(blob);
                         const a = document.createElement("a");
-                        a.href = downloadUrl;
-                        a.download = filename;
-                        document.body.appendChild(a);
-                        a.click();
-                        a.remove();
+                        a.href = downloadUrl; a.download = filename;
+                        document.body.appendChild(a); a.click(); a.remove();
                         setTimeout(() => {
                             progContainer.style.display = 'none';
                             progFill.style.width = '0%';
                             progFill.style.backgroundColor = 'var(--accent)';
-                            percentMsg.innerText = '0%';
-                            statusMsg.innerText = 'Caricamento...';
-                            fileInput.value = "";
-                            this.querySelector('.file-selected-name').style.display = 'none';
-                            this.querySelector('.drop-zone-text').style.display = 'block';
+                            this.reset();
+                            dropZone.querySelector('.file-selected-name').style.display = 'none';
+                            dropZone.querySelector('.drop-zone-text').style.display = 'block';
                             btn.style.display = 'block';
                             dropZone.style.display = 'block';
                         }, 2000);
                     } else {
-                        alert("Si è verificato un errore durante la conversione.");
-                        btn.style.display = 'block';
-                        dropZone.style.display = 'block';
-                        progContainer.style.display = 'none';
+                        alert("Errore nell'elaborazione.");
+                        btn.style.display = 'block'; dropZone.style.display = 'block'; progContainer.style.display = 'none';
                     }
                 }.bind(this);
                 xhr.send(formData);
+            });
+        });
+
+        // ==========================================
+        // LOGICA AVANZATA PER L'EDITOR LIVE (TOOL 3)
+        // ==========================================
+        const wordInput = document.getElementById('wordFileInput');
+        const smartEditorBlock = document.getElementById('smartEditorBlock');
+        const editorTextArea = document.getElementById('editorTextArea');
+        const wordProgressContainer = document.getElementById('wordProgressContainer');
+        const wordStatusMsg = document.getElementById('wordStatusMsg');
+        let currentEditingFilename = "";
+
+        wordInput.addEventListener('change', function() {
+            if (!this.files.length) return;
+            const file = this.files[0];
+            if(file.size > MAX_SIZE) { alert("File massimo 15MB"); return; }
+            
+            currentEditingFilename = file.name;
+            document.getElementById('wordFileName').innerText = "📄 " + file.name;
+            document.getElementById('wordFileName').style.display = 'block';
+            
+            // Invio a Python per estrarre il testo
+            wordProgressContainer.style.display = 'block';
+            wordStatusMsg.innerText = "Estrazione testo dal file Word...";
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            fetch('/leggi-word', { method: 'POST', body: formData })
+            .then(res => res.json())
+            .then(data => {
+                wordProgressContainer.style.display = 'none';
+                if(data.error) { alert("Errore lettura Word: " + data.error); }
+                else {
+                    // Metti il testo dentro l'editor web
+                    editorTextArea.value = data.paragrafi.join("\n");
+                    document.getElementById('wordDropZone').style.display = 'none';
+                    smartEditorBlock.style.display = 'block';
+                }
+            })
+            .catch(() => {
+                wordProgressContainer.style.display = 'none';
+                alert("Impossibile connettersi al server.");
+            });
+        });
+
+        document.getElementById('btnEditorConvert').addEventListener('click', function() {
+            wordProgressContainer.style.display = 'block';
+            wordStatusMsg.innerText = "Compilazione del nuovo PDF...";
+            smartEditorBlock.style.display = 'none';
+
+            const testoPulito = editorTextArea.value.split("\n");
+
+            fetch('/converti-testo-editor', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ filename: currentEditingFilename, paragrafi: testoPulito })
+            })
+            .then(res => res.blob())
+            .then(blob => {
+                wordStatusMsg.innerText = "Download avviato!";
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = currentEditingFilename.replace(".docx", "") + "_modificato.pdf";
+                document.body.appendChild(a); a.click(); a.remove();
+                
+                setTimeout(() => {
+                    wordProgressContainer.style.display = 'none';
+                    document.getElementById('wordDropZone').style.display = 'block';
+                    wordInput.value = "";
+                    document.getElementById('wordFileName').style.display = 'none';
+                }, 2000);
+            })
+            .catch(() => {
+                wordProgressContainer.style.display = 'none';
+                smartEditorBlock.style.display = 'block';
+                alert("Errore generazione PDF.");
             });
         });
     </script>
